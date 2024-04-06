@@ -72,6 +72,8 @@ abstract class User {
     private LibraryCard card;
 
     public abstract boolean resetPassword(String password);
+
+    public abstract void addNotification(Notification notification);
 }
 
 @Getter
@@ -84,10 +86,6 @@ class LibraryCard {
     private double amount;
 
     public void collectFine(String memberId, long days) {
-
-    }
-
-    public double getAmount() {
 
     }
 }
@@ -116,6 +114,7 @@ class Librarian extends User {
             Rack rack = Library.getInstance().getRackForBookItem(bookItem);
             if (rack != null) {
                 rack.addBookItem(bookItem);
+                Catalog.addBook(bookItem.getBook());
                 return true;
             }
         }
@@ -130,6 +129,12 @@ class Librarian extends User {
         }
         return false;
     }
+
+    @Override
+    public void addNotification(Notification notification) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'addNotification'");
+    }
 }
 
 @Getter
@@ -137,6 +142,16 @@ class Librarian extends User {
 class Member extends User {
     private Date dateOfMembership;
     private int totalBooksCheckedOut;
+    private List<Notification> notifications;
+
+    public Member() {
+        notifications = new ArrayList<>();
+    }
+
+    // Method to add a notification to the member's list of notifications
+    public void addNotification(Notification notification) {
+        notifications.add(notification);
+    }
 
     public boolean reserveBookItem(BookItem bookItem) {
         if (bookItem != null && bookItem.getStatus() == BookStatus.AVAILABLE) {
@@ -157,9 +172,6 @@ class Member extends User {
         return false;
     }
 
-    private void incrementTotalBooksCheckedOut() {
-    }
-
     public boolean checkoutBookItem(BookItem bookItem) {
         if (bookItem != null && bookItem.getStatus() == BookStatus.AVAILABLE) {
             // Check if the member is allowed to borrow more books
@@ -177,7 +189,7 @@ class Member extends User {
 
                     // Create a book lending record
                     BookLending lendingRecord = new BookLending();
-                    lendingRecord.setItemId(bookItem.getId());
+                    lendingRecord.setBookItemId(bookItem.getId());
                     lendingRecord.setMemberId(getId());
                     lendingRecord.setCreationDate(new Date());
                     lendingRecord.setDueDate(dueDate);
@@ -199,21 +211,6 @@ class Member extends User {
         return false;
     }
 
-    private void checkForFine(String bookItemId) {
-        // Search for any fines associated with the specified book item and member
-        // For simplicity, let's assume we have a list of fines associated with members
-        List<Fine> fines = getFinesForMember(bookItemId);
-
-        // Check if any fines exist
-        if (fines != null && !fines.isEmpty()) {
-            // If fines are found, calculate the total fine amount
-            double totalFineAmount = calculateTotalFineAmount(fines);
-
-            // Collect the fine
-            Fine.collectFine(getId(), totalFineAmount);
-        }
-    }
-
     public void returnBookItem(BookItem bookItem) {
         if (bookItem != null && bookItem.getStatus() == BookStatus.LOANED) {
             // Update book status to AVAILABLE
@@ -221,17 +218,36 @@ class Member extends User {
             totalBooksCheckedOut--;
 
             // Check for fines if the book is returned after the due date
-            if (bookItem.getDueDate().before(new Date())) {
-                double fineAmount = calculateFineAmount(bookItem);
-                Fine.collectFine(getId(), fineAmount);
-            }
-
-            Library.getInstance().removeLending(null);
+            // BookLending bookLending =
+            // Library.getInstance().getLendingRecord(bookItem.getId(), getId());
+            BookLending.returnBook(bookItem.getId(), getId());
+            // Library.getInstance().removeLending(null);
         }
     }
 
     public boolean renewBookItem(BookItem bookItem) {
 
+        // Find the corresponding BookLending record for the book item and member
+        BookLending lendingRecord = Library.getInstance().getLendingRecord(bookItem.getId(), getId());
+
+        // Check if the lending record exists and if renewal is allowed
+        if (lendingRecord != null && isRenewalAllowed(bookItem)) {
+            // Calculate the new due date for renewal
+            Date newDueDate = BookLending.calculateDueDate(bookItem.getDueDate());
+            bookItem.setDueDate(newDueDate);
+            // Update the due date of the existing lending record
+            lendingRecord.setDueDate(newDueDate);
+            return true; // Renewal successful
+        }
+        return false; // Renewal not allowed or lending record not found
+    }
+
+    // Method to check if the book item is eligible for renewal
+    private boolean isRenewalAllowed(BookItem bookItem) {
+        // Add your conditions for determining renewal eligibility here
+        // For example, you can check if the book item is not marked as reference only
+        // and if it has not reached the maximum number of renewals allowed.
+        return !bookItem.isReferenceOnly();
     }
 
     @Override
@@ -266,13 +282,46 @@ class BookReservation {
     private ReservationStatus status;
     private String memberId;
 
-    public static BookReservation fetchReservationDetails(String bookItemId);
+    public static boolean reserveBook(String bookItemId, String memberId, BookItem bookItem) {
+        // Check if the book item is available for reservation
+        if (bookItem != null && bookItem.getStatus() == BookStatus.AVAILABLE) {
+            // Create a new reservation record
+            BookReservation reservation = new BookReservation();
+            reservation.setItemId(bookItemId);
+            reservation.setCreationDate(new Date());
+            reservation.setStatus(ReservationStatus.WAITING);
+            reservation.setMemberId(memberId);
+
+            // Add the reservation record to the library
+            Library.getInstance().addReservation(reservation);
+
+            // Update the book item status to RESERVED
+            bookItem.setStatus(BookStatus.RESERVED);
+
+            return true; // Reservation successful
+        }
+        return false; // Reservation unsuccessful
+    }
+
+    public static BookReservation fetchReservationDetails(String bookItemId) {
+        // Get all reservations from the library
+        List<BookReservation> allReservations = Library.getInstance().getReservations();
+
+        // Search for the reservation corresponding to the given book item ID
+        for (BookReservation reservation : allReservations) {
+            if (reservation.getItemId().equals(bookItemId)) {
+                return reservation; // Found the reservation
+            }
+        }
+
+        return null; // Reservation not found for the given book item ID
+    }
 }
 
 @Getter
 @Setter
 class BookLending {
-    private String itemId;
+    private String bookItemId;
     private Date creationDate;
     private Date dueDate;
     private Date returnDate;
@@ -280,9 +329,45 @@ class BookLending {
     private BookReservation bookReservation;
     private User user;
 
-    public static boolean lendBook(String bookItemId, String memberId);
+    public static boolean lendBook(String bookItemId, String memberId, BookItem bookItem) {
+        // Check if the book item is available for lending
+        // BookItem bookItem = Library.getInstance().getBookItemById(bookItemId);
+        if (bookItem != null && bookItem.getStatus() == BookStatus.AVAILABLE) {
+            // Create a new lending record
+            BookLending lendingRecord = new BookLending();
+            lendingRecord.setBookItemId(bookItemId);
+            lendingRecord.setMemberId(memberId);
+            lendingRecord.setCreationDate(new Date());
 
-    public static BookLending fetchLendingDetails(String bookItemId);
+            // Set the due date using BookLending class (e.g., 14 days from now)
+            Date dueDate = BookLending.calculateDueDate(new Date());
+            lendingRecord.setDueDate(dueDate);
+
+            // Update book item status to LOANED
+            bookItem.setStatus(BookStatus.LOANED);
+            bookItem.setDueDate(dueDate);
+
+            // Add the lending record to the library
+            Library.getInstance().addLending(lendingRecord);
+
+            return true; // Lending successful
+        }
+        return false; // Lending unsuccessful
+    }
+
+    public static BookLending fetchLendingDetails(String bookItemId) {
+        // Get all lending from the library
+        List<BookLending> allLendings = Library.getInstance().getLendings();
+
+        // Search for the lending corresponding to the given book item ID
+        for (BookLending lending : allLendings) {
+            if (lending.getBookItemId().equals(bookItemId)) {
+                return lending; // Found the lending
+            }
+        }
+
+        return null; // Lending not found for the given book item ID
+    }
 
     public static Date calculateDueDate(Date currentDate) {
         // Calculate due date (e.g., 14 days from current date)
@@ -291,18 +376,58 @@ class BookLending {
         calendar.add(Calendar.DAY_OF_YEAR, 14); // Assuming 14 days borrowing period
         return calendar.getTime();
     }
+
+    public static boolean returnBook(String bookItemId, String memberId) {
+        // Retrieve the lending record from the library
+        BookLending lendingRecord = Library.getInstance().getLendingRecord(bookItemId, memberId);
+
+        if (lendingRecord != null) {
+            lendingRecord.setReturnDate(new Date());
+
+            // Check for fines if the book is returned after the due date
+            if (lendingRecord.getDueDate().before(lendingRecord.getReturnDate())) {
+                double fineAmount = calculateFineAmount(lendingRecord.getDueDate(), lendingRecord.getReturnDate());
+                Library.getInstance().addFine(memberId, bookItemId, fineAmount);
+            }
+
+            Library.getInstance().removeLending(lendingRecord);
+            return true;
+        }
+        return false;
+    }
+
+    private static double calculateFineAmount(Date dueDate, Date returnDate) {
+        long daysOverdue = calculateDaysOverdue(dueDate, returnDate);
+
+        // Calculate fine amount based on library's policy (e.g., $1 per day overdue)
+        double finePerDay = 1.0; // Example: $1 per day fine
+        return finePerDay * daysOverdue;
+    }
+
+    private static long calculateDaysOverdue(Date dueDate, Date returnDate) {
+        long diffInMillies = Math.abs(returnDate.getTime() - dueDate.getTime());
+        long diffInDays = diffInMillies / (24 * 60 * 60 * 1000);
+        return diffInDays;
+    }
 }
 
+@Getter
+@Setter
 class Fine {
     private Date creationDate;
     private String bookItemId;
     private String memberId;
+    private double fineAmount;
 
-    public static void collectFine(String memberId, long days);
+    public static void collectFine(String bookItemId, String memberId, int amount) {
+        System.out.println("Member " + memberId + "has to give fine " + amount + "for lending book item " + bookItemId);
+    }
 }
 
 // User is an abstract class
-abstract class Book {
+@Getter
+@Setter
+class Book {
     private String isbn;
     private String title;
     private String subject;
@@ -313,6 +438,8 @@ abstract class Book {
     private List<Author> authors;
 }
 
+@Getter
+@Setter
 class Author extends Person {
     private String name;
     private String description;
@@ -384,12 +511,13 @@ class Rack {
 }
 
 // User is an abstract class
+@Getter
+@Setter
 abstract class Notification {
     private String notificationId;
     private Date creationDate;
     private String content;
     private BookLending bookLending;
-    private BookReservation bookReservation;
 
     public abstract boolean sendNotification();
 }
@@ -398,7 +526,14 @@ class PostalNotification extends Notification {
     private Address address;
 
     public boolean sendNotification() {
-        // definition
+        // Implement sending postal notification to the member's address
+        // Example: Send postal notification to this.address
+        System.out.println("Postal notification sent to: " + address.getStreetAddress() + ", " + address.getCity()
+                + ", " + address.getState() + ", " + address.getZipCode() + ", " + address.getCountry());
+
+        // Add the notification to the member's list of notifications
+        getBookLending().getUser().addNotification(this);
+        return true; // Notification sent successfully
     }
 }
 
@@ -406,7 +541,13 @@ class EmailNotification extends Notification {
     private String email;
 
     public boolean sendNotification() {
-        // definition
+        // Implement sending email notification to the member's email address
+        // Example: Send email notification to this.email
+        System.out.println("Email notification sent to: " + email);
+
+        // Add the notification to the member's list of notifications
+        getBookLending().getUser().addNotification(this);
+        return true; // Notification sent successfully
     }
 }
 
@@ -417,30 +558,56 @@ interface Search {
     public List<Book> searchByAuthor(String author);
 
     public List<Book> searchBySubject(String subject);
-
-    public List<Book> searchByPublicationDate(Date publishDate);
 }
 
-class Catalog implements Search {
-    private HashMap<String, List<Book>> bookTitles;
-    private HashMap<String, List<Book>> bookAuthors;
-    private HashMap<String, List<Book>> bookSubjects;
-    private HashMap<String, List<Book>> bookPublicationDates;
+class Catalog {
+    private static HashMap<String, List<Book>> bookTitles;
+    private static HashMap<String, List<Book>> bookAuthors;
+    private static HashMap<String, List<Book>> bookSubjects;
 
-    public List<Book> searchByTitle(String query) {
-        // definition
+    public Catalog() {
+        bookTitles = new HashMap<>();
+        bookAuthors = new HashMap<>();
+        bookSubjects = new HashMap<>();
     }
 
-    public List<Book> searchByAuthor(String query) {
-        // definition
+    public static List<Book> searchByTitle(String query) {
+        return bookTitles.getOrDefault(query, new ArrayList<>());
     }
 
-    public List<Book> searchBySubject(String query) {
-        // definition
+    public static List<Book> searchByAuthor(String query) {
+        return bookAuthors.getOrDefault(query, new ArrayList<>());
     }
 
-    public List<Book> searchByPublicationDate(String query) {
-        // definition
+    public static List<Book> searchBySubject(String query) {
+        return bookSubjects.getOrDefault(query, new ArrayList<>());
+    }
+
+    // Method to add a book to the catalog
+    public static void addBook(Book book) {
+        // Add book to bookTitles map
+        String title = book.getTitle();
+        if (!bookTitles.containsKey(title)) {
+            bookTitles.put(title, new ArrayList<>());
+        }
+        bookTitles.get(title).add(book);
+
+        // Add book to bookAuthors map
+        List<Author> authors = book.getAuthors();
+        for (Author author : authors) {
+            String authorName = author.getName();
+            if (!bookAuthors.containsKey(authorName)) {
+                bookAuthors.put(authorName, new ArrayList<>());
+            }
+            bookAuthors.get(authorName).add(book);
+        }
+
+        // Add book to bookSubjects map
+        String subject = book.getSubject();
+        if (!bookSubjects.containsKey(subject)) {
+            bookSubjects.put(subject, new ArrayList<>());
+        }
+        bookSubjects.get(subject).add(book);
     }
 }
 
@@ -452,22 +619,13 @@ class Library {
     private List<Rack> racks;
     private List<BookReservation> reservations;
     private List<BookLending> lendings;
+    private List<Fine> fines;
 
     // Private constructor to prevent external instantiation
     private Library() {
         racks = new ArrayList<>();
         reservations = new ArrayList<>();
         lendings = new ArrayList<>();
-    }
-
-    public List<BookReservation> getReservationsForMember(String memberId) {
-        List<BookReservation> memberReservations = new ArrayList<>();
-        for (BookReservation reservation : reservations) {
-            if (reservation.getMemberId().equals(memberId)) {
-                memberReservations.add(reservation);
-            }
-        }
-        return memberReservations;
     }
 
     // The Library is a singleton class that ensures it will have only one active
@@ -480,6 +638,16 @@ class Library {
             library = new Library();
         }
         return library;
+    }
+
+    public List<BookReservation> getReservationsForMember(String memberId) {
+        List<BookReservation> memberReservations = new ArrayList<>();
+        for (BookReservation reservation : reservations) {
+            if (reservation.getMemberId().equals(memberId)) {
+                memberReservations.add(reservation);
+            }
+        }
+        return memberReservations;
     }
 
     public Rack getRackForBookItem(BookItem bookItem) {
@@ -508,6 +676,24 @@ class Library {
 
     public void removeLending(BookLending lending) {
         lendings.remove(lending);
+    }
+
+    public BookLending getLendingRecord(String bookItemId, String memberId) {
+        for (BookLending lendingRecord : lendings) {
+            if (lendingRecord.getBookItemId().equals(bookItemId) && lendingRecord.getMemberId().equals(memberId)) {
+                return lendingRecord;
+            }
+        }
+        return null; // Lending record not found
+    }
+
+    public void addFine(String memberId, String bookItemId, double fineAmount) {
+        Fine fine = new Fine();
+        fine.setMemberId(memberId);
+        fine.setBookItemId(bookItemId);
+        fine.setFineAmount(fineAmount);
+        fine.setCreationDate(new Date());
+        fines.add(fine);
     }
 }
 
