@@ -88,16 +88,55 @@ class Customer extends Person {
 }
 
 class Admin extends Person {
-    // show here refers to an instance of the ShowTime class
-    public boolean addShow(Movie show);
+    public boolean addShowTime(ShowTime showTime, Hall hall) {
+        if (hall != null) {
+            hall.addShowTime(showTime);
+            return true;
+        }
+        return false;
+    }
 
-    public boolean updateShow(Movie show);
+    // Method to update a show time in a specific hall
+    public boolean updateShowTime(ShowTime newShowTime, ShowTime oldShowTime, Hall hall) {
+        if (hall != null) {
+            List<ShowTime> shows = hall.getShows();
+            int index = shows.indexOf(oldShowTime);
+            if (index != -1) {
+                shows.set(index, newShowTime);
+                return true;
+            }
+        }
+        return false;
+    }
 
-    public boolean deleteShow(Movie show);
+    // Method to delete a show time from a specific hall
+    public boolean deleteShowTime(ShowTime showTime, Hall hall) {
+        if (hall != null) {
+            hall.removeShowTime(showTime);
+            return true;
+        }
+        return false;
+    }
 
-    public boolean addMovie(Movie movie);
+    // Method to add a movie to the system
+    public boolean addMovie(Movie movie, Catalog catalog) {
+        if (catalog != null && movie != null) {
+            catalog.addMovie(movie);
+            return true;
+        }
+        return false;
+    }
 
-    public boolean deleteMovie(Movie movie);
+    // Method to delete a movie from the system
+    public boolean deleteMovie(Movie movie, Catalog catalog) {
+        if (catalog != null && movie != null) {
+            // Implement logic to remove the movie from all halls and cinemas before
+            // deleting
+            // For simplicity, let's assume we don't have this requirement for now
+            catalog.deleteMovie(movie);
+        }
+        return false;
+    }
 }
 
 class TicketAgent extends Person {
@@ -263,6 +302,22 @@ class City {
     private String state;
     private int zipCode;
     private List<Cinema> cinemas;
+
+    public City(String name, String state, int zipCode) {
+        this.name = name;
+        this.state = state;
+        this.zipCode = zipCode;
+        this.cinemas = new ArrayList<>();
+    }
+
+    public void addCinema(Cinema cinema) {
+        cinemas.add(cinema);
+    }
+
+    public void removeCinema(Cinema cinema) {
+        cinemas.remove(cinema);
+    }
+
 }
 
 @Getter
@@ -271,6 +326,20 @@ class Cinema {
     private int cinemaId;
     private List<Hall> halls;
     private City city;
+
+    public Cinema(int cinemaId, City city) {
+        this.cinemaId = cinemaId;
+        this.city = city;
+        this.halls = new ArrayList<>();
+    }
+
+    public void addHall(Hall hall) {
+        halls.add(hall);
+    }
+
+    public void removeHall(Hall hall) {
+        halls.remove(hall);
+    }
 }
 
 @Getter
@@ -294,29 +363,66 @@ class Hall {
         }
         return currentShows;
     }
+
+    public void addShowTime(ShowTime showTime) {
+        this.shows.add(showTime);
+    }
+
+    public void removeShowTime(ShowTime showTime) {
+        this.shows.remove(showTime);
+    }
 }
 
+@Getter
+@Setter
 abstract class Payment {
     private double amount;
-
     private Date timestamp;
     private PaymentStatus status;
+
+    public Payment(double amount, Date timestamp, PaymentStatus status) {
+        this.amount = amount;
+        this.timestamp = timestamp;
+        this.status = status;
+    }
 
     public abstract boolean makePayment();
 }
 
 class Cash extends Payment {
+    public Cash(double amount, Date timestamp, PaymentStatus status) {
+        super(amount, timestamp, status);
+    }
+
+    // Implementing the makePayment method for cash payment
+    @Override
     public boolean makePayment() {
+        // Implementation for cash payment
+        return true; // Assuming payment is always successful
     }
 }
 
+@Getter
+@Setter
 class CreditCard extends Payment {
     private String nameOnCard;
     private String cardNumber;
     private String billingAddress;
     private int code;
 
+    public CreditCard(double amount, Date timestamp, PaymentStatus status,
+            String nameOnCard, String cardNumber, String billingAddress, int code) {
+        super(amount, timestamp, status);
+        this.nameOnCard = nameOnCard;
+        this.cardNumber = cardNumber;
+        this.billingAddress = billingAddress;
+        this.code = code;
+    }
+
+    @Override
     public boolean makePayment() {
+        // Implementation for credit card payment
+        return true; // Assuming payment is always successful
     }
 }
 
@@ -325,16 +431,40 @@ abstract class Notification {
     private Date createdOn;
     private String content;
 
+    public Notification(int notificationId, Date createdOn, String content) {
+        this.notificationId = notificationId;
+        this.createdOn = createdOn;
+        this.content = content;
+    }
+
     public abstract void sendNotification(Person person);
 }
 
 class EmailNotification extends Notification {
+    public EmailNotification(int notificationId, Date createdOn, String content) {
+        super(notificationId, createdOn, content);
+    }
+
+    // Implementing the sendNotification method for email notification
+    @Override
     public void sendNotification(Person person) {
+        // Implementation for sending email notification
+        // Example:
+        System.out.println("Email notification sent to: " + person.getEmail() + "\nContent: " + getContent());
     }
 }
 
 class PhoneNotification extends Notification {
+    public PhoneNotification(int notificationId, Date createdOn, String content) {
+        super(notificationId, createdOn, content);
+    }
+
+    // Implementing the sendNotification method for phone notification
+    @Override
     public void sendNotification(Person person) {
+        // Implementation for sending phone notification
+        // Example:
+        System.out.println("Phone notification sent to: " + person.getPhone() + "\nContent: " + getContent());
     }
 }
 
@@ -356,6 +486,7 @@ class Booking {
         this.totalSeats = totalSeats;
         this.createdOn = createdOn;
         this.status = status;
+        this.status = BookingStatus.PENDING;
         this.tickets = new ArrayList<>();
         this.seats = new ArrayList<>();
     }
@@ -382,6 +513,46 @@ class Booking {
             totalCost += seat.getRate();
         }
         return totalCost;
+    }
+
+    public boolean makePayment(Payment payment) {
+        // Make payment using the provided payment method
+        boolean paymentStatus = payment.makePayment();
+
+        if (paymentStatus) {
+            // If payment is successful, update payment status and booking status
+            this.payment.setStatus(PaymentStatus.CONFIRMED);
+            this.status = BookingStatus.CONFIRMED;
+            return true;
+        } else {
+            // If payment fails, update payment status to declined
+            this.payment.setStatus(PaymentStatus.DECLINED);
+            return false;
+        }
+    }
+
+    public void generateBookingNotification(Notification notification) {
+        // Send notification to relevant persons
+        notification.sendNotification(customer);
+        notification.sendNotification(ticketAgent);
+        // Additional logic if needed
+    }
+
+    // Method to generate a notification when a booking is canceled
+    public void generateCancellationNotification(Notification notification) {
+        // Send cancellation notification to relevant persons
+        notification.sendNotification(customer);
+        notification.sendNotification(ticketAgent);
+        // Additional logic if needed
+    }
+}
+
+class SystemManager {
+    // Method to generate a notification when a new movie is released
+    public void generateNewMovieNotification(Notification notification) {
+        // Send notification to relevant persons
+        notification.sendNotification(admin);
+        // Additional logic if needed
     }
 }
 
@@ -428,6 +599,28 @@ class Catalog implements Search {
         movieReleaseDates.get(releaseDate).add(movie);
     }
 
+    public boolean deleteMovie(Movie movie) {
+        // Remove the movie from all indexes in the catalog
+        String titleKey = movie.getTitle().toLowerCase();
+        if (movieTitles.containsKey(titleKey)) {
+            movieTitles.remove(titleKey);
+        }
+        String languageKey = movie.getLanguage().toLowerCase();
+        if (movieLanguages.containsKey(languageKey)) {
+            movieLanguages.remove(languageKey);
+        }
+        String genreKey = movie.getGenre().toLowerCase();
+        if (movieGenres.containsKey(genreKey)) {
+            movieGenres.remove(genreKey);
+        }
+        Date releaseDate = movie.getReleaseDate();
+        if (movieReleaseDates.containsKey(releaseDate)) {
+            movieReleaseDates.remove(releaseDate);
+        }
+        // Return true if the movie was successfully deleted
+        return true;
+    }
+
     // Method to search movies by title
     @Override
     public List<Movie> searchMovieTitle(String title) {
@@ -457,4 +650,49 @@ class Catalog implements Search {
 }
 
 public class System1 {
+
+    public static void main() {
+
+        City city1 = new City("City 1", "State 1", 12345);
+        Cinema cinema1 = new Cinema(1, city1);
+        Hall hall1 = new Hall(1);
+        cinema1.addHall(hall1);
+
+        // Create instances of movies, show times, etc.
+        Movie movie1 = new Movie("Movie 1", "Action", new Date(), "English", 120);
+        ShowTime showTime1 = new ShowTime(1, new Date(), new Date(), 120);
+        hall1.addShowTime(showTime1);
+
+        // Create instances of customers, admins, ticket agents, etc.
+        Customer customer1 = new Customer("Customer 1", "Address 1", "1234567890", "customer1@example.com");
+        Admin admin1 = new Admin("Admin 1", "Address 2", "0987654321", "admin1@example.com");
+        TicketAgent ticketAgent1 = new TicketAgent("Ticket Agent 1", "Address 3", "9876543210", "agent1@example.com");
+
+        // Create instances of payments
+        Payment cashPayment = new Cash(100.0, new Date(), PaymentStatus.PENDING);
+        Payment creditCardPayment = new CreditCard(50.0, new Date(), PaymentStatus.PENDING,
+                "John Doe", "1234 5678 9012 3456", "Billing Address", 123);
+
+        // Create instances of notifications
+        Notification emailNotification = new EmailNotification(1, new Date(), "Notification content");
+        Notification phoneNotification = new PhoneNotification(2, new Date(), "Notification content");
+
+        // Simulate booking process
+        Booking booking1 = new Booking(1, 50, new Date(), BookingStatus.PENDING, creditCardPayment);
+        if (booking1.makePayment(creditCardPayment)) {
+            booking1.generateBookingNotification(emailNotification);
+        }
+
+        // Simulate cancellation process
+        Booking booking2 = new Booking(2, 50, new Date(), BookingStatus.PENDING, cashPayment);
+        if (booking2.makePayment(cashPayment)) {
+            booking2.generateCancellationNotification(phoneNotification);
+        }
+
+        // Simulate notification for new movie release
+        Movie movie2 = new Movie("Movie 2", "Comedy", new Date(), "English", 90);
+        Notification movieReleaseNotification = new EmailNotification(3, new Date(), "New movie released: Movie 2");
+        SystemManager systemManager = new SystemManager();
+        systemManager.generateNewMovieNotification(movieReleaseNotification);
+    }
 }
