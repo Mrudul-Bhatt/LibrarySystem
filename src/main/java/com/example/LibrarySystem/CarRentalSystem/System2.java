@@ -1,12 +1,12 @@
 package com.example.LibrarySystem.CarRentalSystem;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
-import lombok.Getter;
-import lombok.Setter;
 
 enum VehicleStatus {
     AVAILABLE,
@@ -80,6 +80,12 @@ enum VehicleLogType {
     OTHER
 }
 
+interface Search {
+    public List<Vehicle> searchByType(String type);
+
+    public List<Vehicle> searchByModel(String model);
+}
+
 @Getter
 @Setter
 class Address {
@@ -128,6 +134,7 @@ class Receptionist extends Account {
 
 class Customer extends Account {
     private String licenseNumber;
+    private List<VehicleReservation> reservations;
     private Date licenseExpiry;
 
     public boolean addReservation();
@@ -272,7 +279,7 @@ class VehicleReservation {
     private List<Service> services;
 
     public VehicleReservation(int reservationId, String customerId, String vehicleId, Date creationDate,
-            ReservationStatus status, Date dueDate, String pickupLocation, String returnLocation) {
+                              ReservationStatus status, Date dueDate, String pickupLocation, String returnLocation) {
         this.reservationId = reservationId;
         this.customerId = customerId;
         this.vehicleId = vehicleId;
@@ -328,12 +335,6 @@ class Fine {
     public double calculateFine();
 }
 
-interface Search {
-    public List<Vehicle> searchByType(String type);
-
-    public List<Vehicle> searchByModel(String model);
-}
-
 class VehicleCatalog implements Search {
     private HashMap<String, List<Vehicle>> vehicleTypes;
     private HashMap<String, List<Vehicle>> vehicleModels;
@@ -354,14 +355,11 @@ class CarRentalBranch {
 }
 
 class CarRentalSystem {
-    private String name;
-    private List<CarRentalBranch> branches;
-
-    public void addNewBranch(CarRentalBranch branch);
-
     // The CarRentalSystem is a singleton class that ensures it will have only one
     // active instance at a time
     private static CarRentalSystem system = null;
+    private String name;
+    private List<CarRentalBranch> branches;
 
     // Created a static method to access the singleton instance of CarRentalSystem
     // class
@@ -371,8 +369,10 @@ class CarRentalSystem {
         }
         return system;
     }
+
+    public void addNewBranch(CarRentalBranch branch);
 }
 
-public class System1 {
+public class System2 {
 
 }
