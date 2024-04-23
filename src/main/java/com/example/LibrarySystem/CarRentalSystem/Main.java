@@ -279,7 +279,7 @@ class VehicleReservation {
     private List<Service> services;
 
     public VehicleReservation(int reservationId, String customerId, String vehicleId, Date creationDate,
-                              ReservationStatus status, Date dueDate, String pickupLocation, String returnLocation) {
+            ReservationStatus status, Date dueDate, String pickupLocation, String returnLocation) {
         this.reservationId = reservationId;
         this.customerId = customerId;
         this.vehicleId = vehicleId;
@@ -373,6 +373,6 @@ class CarRentalSystem {
     public void addNewBranch(CarRentalBranch branch);
 }
 
-public class System2 {
+public class Main {
 
 }
