@@ -5,45 +5,58 @@ import com.example.LibrarySystem.ATMSystem.System3.Enumerations.TransactionType;
 import com.example.LibrarySystem.ATMSystem.System3.User_ATMCard.ATMCard;
 
 public class CheckBalanceState extends ATMState {
+    private static CheckBalanceState instance = new CheckBalanceState(); // Singleton instance
+
+    private CheckBalanceState() {
+    }
+
+    public static CheckBalanceState getInstance() {
+        return instance;
+    }
 
     @Override
     public void insertCard(ATM atm, ATMCard card) {
-        throw new UnsupportedOperationException("Unimplemented method 'insertCard'");
+        System.out.println("Card already inserted.");
     }
 
     @Override
     public void authenticatePin(ATM atm, ATMCard card, int pin) {
-        throw new UnsupportedOperationException("Unimplemented method 'authenticatePin'");
+        System.out.println("PIN already authenticated.");
     }
 
     @Override
     public void selectOperation(ATM atm, ATMCard card, TransactionType tType) {
-        throw new UnsupportedOperationException("Unimplemented method 'selectOperation'");
+        System.out.println("Operation already selected.");
     }
 
     @Override
     public void cashWithdrawal(ATM atm, ATMCard card, int withdrawAmount) {
-        throw new UnsupportedOperationException("Unimplemented method 'cashWithdrawal'");
+        System.out.println("Please complete the balance inquiry transaction first.");
     }
 
     @Override
     public void displayBalance(ATM atm, ATMCard card) {
-        throw new UnsupportedOperationException("Unimplemented method 'displayBalance'");
+        System.out.println("Available Balance: $" + atm.getCurrentUser().getAccount().getAvailableBalance());
+        atm.setCurrentATMState(IdleState.getInstance());
+        atm.getPrinter().printReceipt("Balance inquiry" + atm.getCurrentUser().getAccount().getAvailableBalance());
+        atm.getCardReader().ejectCard();
     }
 
     @Override
     public void transferMoney(ATM atm, ATMCard card, int accountNumber, int transferAmount) {
-        throw new UnsupportedOperationException("Unimplemented method 'transferMoney'");
+        System.out.println("Please complete the balance inquiry transaction first.");
     }
 
     @Override
-    public void returnCard() {
-        throw new UnsupportedOperationException("Unimplemented method 'returnCard'");
+    public void returnCard(ATM atm) {
+        System.out.println("Card returned.");
+        atm.setCurrentATMState(IdleState.getInstance());
     }
 
     @Override
     public void exit(ATM atm) {
-        throw new UnsupportedOperationException("Unimplemented method 'exit'");
+        System.out.println("ATM session terminated.");
+        atm.setCurrentATMState(IdleState.getInstance());
     }
 
 }

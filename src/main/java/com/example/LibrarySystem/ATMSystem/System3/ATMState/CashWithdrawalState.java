@@ -1,6 +1,7 @@
 package com.example.LibrarySystem.ATMSystem.System3.ATMState;
 
 import com.example.LibrarySystem.ATMSystem.System3.ATM_ATMRoom.ATM;
+import com.example.LibrarySystem.ATMSystem.System3.Bank_BankAccount.BankAccount;
 import com.example.LibrarySystem.ATMSystem.System3.Enumerations.TransactionType;
 import com.example.LibrarySystem.ATMSystem.System3.User_ATMCard.ATMCard;
 
@@ -31,9 +32,10 @@ public class CashWithdrawalState extends ATMState {
 
     @Override
     public void cashWithdrawal(ATM atm, ATMCard card, int withdrawAmount) {
-        if (card.getAvailableBalance() >= withdrawAmount) {
+        BankAccount bankAccount = atm.getCurrentUser().getAccount();
+        if (bankAccount.getAvailableBalance() >= withdrawAmount) {
             System.out.println("Cash withdrawal of $" + withdrawAmount + " successful.");
-            card.getAccount().withdraw(withdrawAmount);
+            bankAccount.withdraw(withdrawAmount);
             atm.setCurrentATMState(IdleState.getInstance());
             atm.getCashDispenser().dispenseCash(withdrawAmount); // Dispense cash
             atm.getPrinter().printReceipt("Cash withdrawal" + withdrawAmount);
