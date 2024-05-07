@@ -20,6 +20,22 @@ public class RoomBooking {
     private List<Notification> notifications;
 
     public static RoomBooking fetchDetails(String reservationNumber) {
-        return null;
+        // Logic to fetch room booking details from the database based on reservation
+        // number
+        // This method could involve querying the database or an external API
+        return null; // Placeholder return statement
+    }
+
+    public boolean cancelBooking() {
+        if (status == BookingStatus.PENDING || status == BookingStatus.CONFIRMED) {
+            // Cancel the booking
+            status = BookingStatus.CANCELLED;
+            // Remove the booking from the room's bookings list
+            room.getBookings().remove(this);
+            // Remove reference to the room from the booking
+            room = null;
+            return true;
+        }
+        return false; // Booking cannot be cancelled in other statuses like checked-in or checked-out
     }
 }
