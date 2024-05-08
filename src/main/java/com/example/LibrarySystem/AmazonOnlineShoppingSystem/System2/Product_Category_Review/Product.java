@@ -1,5 +1,12 @@
 package com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Product_Category_Review;
 
+import java.util.List;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class Product {
     private String productId;
     private String name;
@@ -9,12 +16,22 @@ public class Product {
     private ProductCategory category;
     private List<ProductReview> reviews;
     private int availableItemCount;
-    
-//    private Account account;
 
-    public int getAvailableCount();
+    public void updateAvailability(int quantitySold) {
+        availableItemCount -= quantitySold;
+    }
 
-    public int updateAvailableCount();
+    public boolean validateProductData() {
+        // Implement validation logic
+        return true; // Placeholder
+    }
 
-    public boolean updatePrice(double newPrice);
+    public double calculateAverageRating() {
+        // Calculate the average rating of the product based on customer reviews
+        double sum = 0;
+        for (ProductReview review : reviews) {
+            sum += review.getRating();
+        }
+        return reviews.isEmpty() ? 0 : sum / reviews.size();
+    }
 }

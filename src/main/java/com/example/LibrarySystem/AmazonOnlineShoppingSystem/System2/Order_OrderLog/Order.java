@@ -2,9 +2,16 @@ package com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Order_Order
 
 import com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Cart_CartItems.ShoppingCart;
 import com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Enums.OrderStatus;
+import com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Payment.Payment;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
+@Getter
+@Setter
 public class Order {
     private String orderNumber;
     private OrderStatus status;
@@ -12,9 +19,15 @@ public class Order {
     private List<OrderLog> orderLog;
     private ShoppingCart shoppingCart;
 
-    public boolean sendForShipment();
+    public boolean sendForShipment() {
 
-    public boolean makePayment(Payment payment);
+    }
 
-    public boolean addOrderLog(OrderLog orderLog);
+    public boolean makePayment(Payment payment) {
+
+    }
+
+    public boolean addOrderLog(OrderLog orderLog) {
+        return this.orderLog.add(orderLog);
+    }
 }

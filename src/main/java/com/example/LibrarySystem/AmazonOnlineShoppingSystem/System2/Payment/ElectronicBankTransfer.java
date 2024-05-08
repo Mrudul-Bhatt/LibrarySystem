@@ -9,6 +9,5 @@ public class ElectronicBankTransfer extends Payment {
     private String billingAddress;
 
     public PaymentStatus makePayment() {
-        // functionality
     }
 }

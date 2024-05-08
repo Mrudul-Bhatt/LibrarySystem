@@ -1,6 +1,12 @@
 package com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Account_Admin_Customer;
 
 import com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Enums.AccountStatus;
+import com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Payment.CreditCard;
+import com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Payment.ElectronicBankTransfer;
+import com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Product_Category_Review.Product;
+import com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Product_Category_Review.ProductReview;
+import com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Search_Catalogue.Catalogue;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,15 +26,25 @@ public class Account {
     private List<CreditCard> creditCards;
     private List<ElectronicBankTransfer> bankAccounts;
 
-    public Address getShippingAddress();
+    public Address getShippingAddress() {
 
-    public boolean addProduct(Product product);
+    }
 
-    public boolean addProductReview(ProductReview review, Product product);
+    public boolean addProduct(Product product, Catalogue catalogue) {
+        return catalogue.addProduct(product);
+    }
 
-    public boolean deleteProduct(Product product);
+    public boolean addProductReview(ProductReview review, Product product) {
+        return product.getReviews().add(review);
+    }
 
-    public boolean deleteProductReview(ProductReview review, Product product);
+    public boolean deleteProduct(Product product, Catalogue catalogue) {
+        return catalogue.deleteProduct(product);
+    }
+
+    public boolean deleteProductReview(ProductReview review, Product product) {
+
+    }
 
     public boolean resetPassword();
 }

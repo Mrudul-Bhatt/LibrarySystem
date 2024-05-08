@@ -9,6 +9,5 @@ public class CreditCard extends Payment {
     private int code;
 
     public PaymentStatus makePayment() {
-        // functionality
     }
 }
