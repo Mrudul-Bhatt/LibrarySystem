@@ -4,9 +4,15 @@ import com.example.LibrarySystem.HotelManagementSystem.System3.Enums.BookingStat
 import com.example.LibrarySystem.HotelManagementSystem.System3.Notification.Notification;
 import com.example.LibrarySystem.HotelManagementSystem.System3.Room_RoomKey_RoomHousekeeping.Room;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Getter
+@Setter
 public class RoomBooking {
     private String reservationNumber;
     private Date startDate;
@@ -14,28 +20,30 @@ public class RoomBooking {
     private BookingStatus status;
     private Date checkin;
     private Date checkout;
-    private int guestId;
+    private String guestId;
     private Room room;
     private Invoice invoice;
     private List<Notification> notifications;
+    private List<Invoice> serviceInvoices;
 
-    public static RoomBooking fetchDetails(String reservationNumber) {
-        // Logic to fetch room booking details from the database based on reservation
-        // number
-        // This method could involve querying the database or an external API
-        return null; // Placeholder return statement
+    public RoomBooking(Date starDate, int durationInDays, String guestId, Room room) {
+        this.reservationNumber = Double.toString(Math.random());
+        this.startDate = starDate;
+        this.durationInDays = durationInDays;
+        this.status = BookingStatus.PENDING;
+        this.guestId = guestId;
+        this.room = room;
+        this.notifications = new ArrayList<>();
+        this.serviceInvoices = new ArrayList<>();
     }
 
-    public boolean cancelBooking() {
-        if (status == BookingStatus.PENDING || status == BookingStatus.CONFIRMED) {
-            // Cancel the booking
-            status = BookingStatus.CANCELLED;
-            // Remove the booking from the room's bookings list
-            room.getBookings().remove(this);
-            // Remove reference to the room from the booking
-            room = null;
-            return true;
-        }
-        return false; // Booking cannot be cancelled in other statuses like checked-in or checked-out
+    public boolean addInvoiceServices(Invoice invoice) {
+        this.serviceInvoices.add(invoice);
+        return true;
+    }
+
+    public boolean makePaymentForServices() {
+        System.out.println("Payment done");
+        return true;
     }
 }

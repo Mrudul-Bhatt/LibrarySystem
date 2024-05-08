@@ -2,8 +2,13 @@ package com.example.LibrarySystem.HotelManagementSystem.System3.Room_RoomKey_Roo
 
 import com.example.LibrarySystem.HotelManagementSystem.System3.Person_PersonTypes.Housekeeper;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Date;
 
+@Getter
+@Setter
 public class RoomHousekeeping {
     private String description;
     private Date startDatetime;

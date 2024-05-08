@@ -2,6 +2,11 @@ package com.example.LibrarySystem.HotelManagementSystem.System3.Room_RoomKey_Roo
 
 import java.util.Date;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class RoomKey {
     private String keyId;
     private String barcode;

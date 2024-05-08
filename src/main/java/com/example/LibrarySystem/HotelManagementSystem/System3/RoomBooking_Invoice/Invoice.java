@@ -1,7 +1,13 @@
 package com.example.LibrarySystem.HotelManagementSystem.System3.RoomBooking_Invoice;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class Invoice {
     private double amount;
+    private boolean isPaid;
 
     public Invoice(double amount) {
         this.amount = amount;

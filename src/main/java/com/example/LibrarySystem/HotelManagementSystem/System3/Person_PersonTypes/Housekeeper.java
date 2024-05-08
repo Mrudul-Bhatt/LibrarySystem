@@ -1,7 +1,17 @@
 package com.example.LibrarySystem.HotelManagementSystem.System3.Person_PersonTypes;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.example.LibrarySystem.HotelManagementSystem.System3.Address_Account.Account;
+import com.example.LibrarySystem.HotelManagementSystem.System3.Address_Account.Address;
 import com.example.LibrarySystem.HotelManagementSystem.System3.Room_RoomKey_RoomHousekeeping.Room;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class Housekeeper extends Person {
     private List<Room> assignedRooms;
 
