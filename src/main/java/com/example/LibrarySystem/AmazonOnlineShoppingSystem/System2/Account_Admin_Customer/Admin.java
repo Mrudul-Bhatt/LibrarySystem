@@ -3,7 +3,6 @@ package com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Account_Adm
 import com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Enums.AccountStatus;
 import com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Product_Category_Review.ProductCategory;
 import com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Search_Catalogue.Catalogue;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,9 +11,20 @@ import lombok.Setter;
 public class Admin {
     private Account account;
 
-    public boolean blockUser(Account account) {
-        account.setStatus(AccountStatus.BLOCKED);
-        return true;
+    public boolean blockUser(Account userAccount) {
+        if (userAccount != null && userAccount.getStatus() != AccountStatus.BLOCKED) {
+            userAccount.setStatus(AccountStatus.BLOCKED);
+            return true;
+        }
+        return false; // User account not found or already blocked
+    }
+
+    public boolean unblockUser(Account userAccount) {
+        if (userAccount != null && userAccount.getStatus() == AccountStatus.BLOCKED) {
+            userAccount.setStatus(AccountStatus.ACTIVE);
+            return true;
+        }
+        return false; // User account not found or not blocked
     }
 
     public boolean addNewProductCategory(ProductCategory category, Catalogue catalogue) {

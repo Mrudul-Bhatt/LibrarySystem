@@ -1,13 +1,12 @@
 package com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Shipment_ShipmentLog;
 
+import com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Enums.ShipmentStatus;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Enums.ShipmentStatus;
-
-import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 @Setter
@@ -20,6 +19,18 @@ public class Shipment {
 
     public Shipment() {
         this.shipmentLogs = new ArrayList<>();
+    }
+
+    public boolean sendForShipment() {
+        if (shipmentDate != null) {
+            System.out.println("Shipment has already been initiated.");
+            return false;
+        }
+        // Simulate sending for shipment
+        shipmentDate = new Date(); // Set the shipment date to the current date
+        estimatedArrival = calculateEstimatedArrival(10); // Calculate estimated arrival date
+        addShipmentLog(new ShipmentLog(shipmentNumber, new Date(), ShipmentStatus.SHIPPED));
+        return true;
     }
 
     public boolean addShipmentLog(ShipmentLog shipmentLog) {
@@ -37,7 +48,7 @@ public class Shipment {
         // Calculate estimated arrival based on shipment date and transit days
         // Example implementation:
         long estimatedArrivalTime = shipmentDate.getTime() + transitDays * 24 * 60 * 60 * 1000; // Adding transit days
-                                                                                                // in milliseconds
+        // in milliseconds
         return new Date(estimatedArrivalTime);
     }
 

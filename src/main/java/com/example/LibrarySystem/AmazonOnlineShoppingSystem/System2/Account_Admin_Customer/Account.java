@@ -6,7 +6,6 @@ import com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Payment.Elec
 import com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Product_Category_Review.Product;
 import com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Product_Category_Review.ProductReview;
 import com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Search_Catalogue.Catalogue;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,10 +25,6 @@ public class Account {
     private List<CreditCard> creditCards;
     private List<ElectronicBankTransfer> bankAccounts;
 
-    public Address getShippingAddress() {
-
-    }
-
     public boolean addProduct(Product product, Catalogue catalogue) {
         return catalogue.addProduct(product);
     }
@@ -43,8 +38,33 @@ public class Account {
     }
 
     public boolean deleteProductReview(ProductReview review, Product product) {
-
+        if (product != null && product.getReviews().contains(review)) {
+            return product.getReviews().remove(review);
+        }
+        return false; // Review not found or product does not exist
     }
 
-    public boolean resetPassword();
+    public boolean addShippingAddress(Address address) {
+        return shippingAddress.add(address);
+    }
+
+    public boolean removeShippingAddress(Address address) {
+        return shippingAddress.remove(address);
+    }
+
+    public boolean addCreditCard(CreditCard creditCard) {
+        return creditCards.add(creditCard);
+    }
+
+    public boolean removeCreditCard(CreditCard creditCard) {
+        return creditCards.remove(creditCard);
+    }
+
+    public boolean addBankAccount(ElectronicBankTransfer bankAccount) {
+        return bankAccounts.add(bankAccount);
+    }
+
+    public boolean removeBankAccount(ElectronicBankTransfer bankAccount) {
+        return bankAccounts.remove(bankAccount);
+    }
 }
