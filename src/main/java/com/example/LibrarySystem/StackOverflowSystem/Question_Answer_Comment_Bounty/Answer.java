@@ -1,6 +1,9 @@
 package com.example.LibrarySystem.StackOverflowSystem.Question_Answer_Comment_Bounty;
 
 import com.example.LibrarySystem.StackOverflowSystem.Account_User_Admin_Moderator_Guest.User;
+import com.example.LibrarySystem.StackOverflowSystem.Notification.Notification;
+import com.example.LibrarySystem.StackOverflowSystem.Observer_Observable_DP.Observable;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +13,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class Answer {
+public class Answer extends Observable {
     private int id;
     private String content;
     private int flagCount;
@@ -48,10 +51,16 @@ public class Answer {
 
     public void addFollower(User follower) {
         followers.add(follower);
+        addObserver(follower);
     }
 
     public void removeFollower(User follower) {
         followers.remove(follower);
+        removeObserver(follower);
+    }
+
+    public void notifyFollowers(Notification notification) {
+        notifyObservers(notification);
     }
 
     public void upVote() {

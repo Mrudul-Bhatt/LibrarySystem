@@ -3,11 +3,14 @@ package com.example.LibrarySystem.StackOverflowSystem.Account_User_Admin_Moderat
 import com.example.LibrarySystem.StackOverflowSystem.Badge_Tag_TagList.Badge;
 import com.example.LibrarySystem.StackOverflowSystem.Badge_Tag_TagList.Tag;
 import com.example.LibrarySystem.StackOverflowSystem.Badge_Tag_TagList.TagList;
+import com.example.LibrarySystem.StackOverflowSystem.Notification.Notification;
+import com.example.LibrarySystem.StackOverflowSystem.Observer_Observable_DP.Observer;
 import com.example.LibrarySystem.StackOverflowSystem.Question_Answer_Comment_Bounty.Answer;
 import com.example.LibrarySystem.StackOverflowSystem.Question_Answer_Comment_Bounty.Comment;
 import com.example.LibrarySystem.StackOverflowSystem.Question_Answer_Comment_Bounty.Question;
 import com.example.LibrarySystem.StackOverflowSystem.Search_SearchCatalogue.SearchCatalogue;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,7 +18,8 @@ import java.util.List;
 
 @Getter
 @Setter
-public class User {
+@AllArgsConstructor
+public class User implements Observer {
     private int reputationPoints;
     private Account account;
     private List<Badge> badges;
@@ -29,6 +33,14 @@ public class User {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void update(Notification notification) {
+        // Logic to handle the notification received by the user
+
+        System.out.println("Hi, you have a new notification");
+        System.out.println(notification.getContent());
     }
 
     public boolean addAnswer(Question question, Answer answer) {

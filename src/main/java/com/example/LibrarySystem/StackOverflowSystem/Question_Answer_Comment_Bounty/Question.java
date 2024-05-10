@@ -4,6 +4,9 @@ import com.example.LibrarySystem.StackOverflowSystem.Account_User_Admin_Moderato
 import com.example.LibrarySystem.StackOverflowSystem.Badge_Tag_TagList.Tag;
 import com.example.LibrarySystem.StackOverflowSystem.Enums.ClosingDetail;
 import com.example.LibrarySystem.StackOverflowSystem.Enums.QuestionStatus;
+import com.example.LibrarySystem.StackOverflowSystem.Notification.Notification;
+import com.example.LibrarySystem.StackOverflowSystem.Observer_Observable_DP.Observable;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +16,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class Question {
+public class Question extends Observable {
     private int id;
     private String title;
     private int flagCount;
@@ -82,10 +85,16 @@ public class Question {
 
     public void addFollower(User follower) {
         this.followers.add(follower);
+        addObserver(follower);
     }
 
     public void removeFollower(User follower) {
         this.followers.remove(follower);
+        removeObserver(follower);
+    }
+
+    public void notifyFollowers(Notification notification) {
+        notifyObservers(notification);
     }
 
     public void upVote() {
