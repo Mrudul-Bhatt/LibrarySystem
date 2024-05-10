@@ -16,6 +16,7 @@ import java.util.List;
 public class Question {
     private int id;
     private String title;
+    private int flagCount;
     private String content;
     private User createdBy;
     private int upVotes;
@@ -120,6 +121,10 @@ public class Question {
 
     public void removeBounty() {
         this.bounty = null;
+    }
+
+    public void incrementFlagCount() {
+        flagCount++;
     }
 
 }

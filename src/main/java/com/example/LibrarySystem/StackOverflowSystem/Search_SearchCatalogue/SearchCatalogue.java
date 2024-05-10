@@ -13,12 +13,12 @@ import java.util.List;
 @Getter
 @Setter
 public class SearchCatalogue implements Search {
-//    private HashMap<String, List<Tag>> questionsUsingTags;
-//    private HashMap<String, List<User>> questionsUsingUsers;
-//    private HashMap<String, List<String>> questionsUsingWords;
+    // private HashMap<String, List<Tag>> questionsUsingTags;
+    // private HashMap<String, List<User>> questionsUsingUsers;
+    // private HashMap<String, List<String>> questionsUsingWords;
 
     private HashMap<String, List<Question>> questionsUsingTags;
-    private HashMap<String, List<User>> questionsUsingUsers;
+    private HashMap<String, List<Question>> questionsUsingUsers;
     private HashMap<String, List<Question>> questionsUsingWords;
 
     public SearchCatalogue() {
@@ -39,7 +39,7 @@ public class SearchCatalogue implements Search {
         User user = question.getCreatedBy();
         String username = user.getAccount().getUsername();
         questionsUsingUsers.putIfAbsent(username, new ArrayList<>());
-        questionsUsingUsers.get(username).add(user);
+        questionsUsingUsers.get(username).add(question);
 
         // Index question by words in title and content
         String[] words = question.getTitle().split("\\s+"); // Split by whitespace
@@ -49,17 +49,52 @@ public class SearchCatalogue implements Search {
         }
     }
 
+    public void removeQuestion(Question question) {
+        removeQuestionByTags(question);
+        removeQuestionByUsers(question);
+        removeQuestionByWords(question);
+    }
+
+    private void removeQuestionByTags(Question question) {
+        // Remove the question from the search index based on its tags
+        List<Tag> tags = question.getTags();
+        for (Tag tag : tags) {
+            List<Question> questions = questionsUsingTags.get(tag.getName());
+            if (questions != null) {
+                questions.remove(question);
+            }
+        }
+    }
+
+    private void removeQuestionByUsers(Question question) {
+        // Remove the question from the search index based on its user
+        User user = question.getCreatedBy();
+        if (user != null) {
+            List<Question> questions = questionsUsingUsers.get(user.getAccount().getUsername());
+            if (questions != null) {
+                questions.remove(question);
+            }
+        }
+    }
+
+    private void removeQuestionByWords(Question question) {
+        // Remove the question from the search index based on words in its title and
+        // content
+        String[] words = question.getTitle().split("\\s+");
+        for (String word : words) {
+            List<Question> questions = questionsUsingWords.get(word);
+            if (questions != null) {
+                questions.remove(question);
+            }
+        }
+    }
+
     public List<Question> searchByTags(String tagName) {
         return questionsUsingTags.getOrDefault(tagName, new ArrayList<>());
     }
 
     public List<Question> searchByUsers(String username) {
-        List<Question> result = new ArrayList<>();
-        List<User> users = questionsUsingUsers.getOrDefault(username, new ArrayList<>());
-        for (User user : users) {
-            result.addAll(user.getCreatedQuestions());
-        }
-        return result;
+        return questionsUsingUsers.getOrDefault(username, new ArrayList<>());
     }
 
     public List<Question> searchByWords(String word) {

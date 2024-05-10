@@ -65,4 +65,29 @@ public class Catalogue implements Search {
         return false;
     }
 
+    public boolean addProductCategory(String categoryName) {
+        if (!products.containsKey(categoryName)) {
+            products.put(categoryName, new ArrayList<>());
+            return true;
+        }
+        return false; // Category already exists
+    }
+
+    public boolean editProductCategory(String oldCategoryName, String newCategoryName) {
+        if (products.containsKey(oldCategoryName)) {
+            List<Product> productsInCategory = products.remove(oldCategoryName);
+            products.put(newCategoryName, productsInCategory);
+            return true;
+        }
+        return false; // Category does not exist
+    }
+
+    public boolean deleteProductCategory(String categoryName) {
+        if (products.containsKey(categoryName)) {
+            products.remove(categoryName);
+            return true;
+        }
+        return false; // Category does not exist
+    }
+
 }

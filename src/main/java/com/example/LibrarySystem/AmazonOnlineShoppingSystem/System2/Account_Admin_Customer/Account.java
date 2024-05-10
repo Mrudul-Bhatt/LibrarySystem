@@ -6,6 +6,8 @@ import com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Payment.Elec
 import com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Product_Category_Review.Product;
 import com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Product_Category_Review.ProductReview;
 import com.example.LibrarySystem.AmazonOnlineShoppingSystem.System2.Search_Catalogue.Catalogue;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,6 +15,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class Account {
     private String userName;
     private String password;

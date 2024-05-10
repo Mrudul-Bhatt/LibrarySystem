@@ -10,7 +10,20 @@ import java.util.HashMap;
 public class TagList {
     private HashMap<Tag, Integer> tagsCount;
 
-    public void incrementTagCount();
+    public TagList() {
+        this.tagsCount = new HashMap<>();
+    }
 
-    public void decrementTagCount();
+    public void incrementTagCount(Tag tag) {
+        tagsCount.put(tag, tagsCount.getOrDefault(tag, 0) + 1);
+    }
+
+    public void decrementTagCount(Tag tag) {
+        int count = tagsCount.getOrDefault(tag, 0);
+        if (count > 1) {
+            tagsCount.put(tag, count - 1);
+        } else {
+            tagsCount.remove(tag);
+        }
+    }
 }

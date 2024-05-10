@@ -28,14 +28,15 @@ public class Admin {
     }
 
     public boolean addNewProductCategory(ProductCategory category, Catalogue catalogue) {
-        return catalogue.addProductCategory(category);
+        return catalogue.addProductCategory(category.getName());
     }
 
-    public boolean modifyProductCategory(ProductCategory category, Catalogue catalogue) {
-        return catalogue.editProductCategory(category);
+    public boolean modifyProductCategory(ProductCategory oldCategory, ProductCategory newCategory,
+            Catalogue catalogue) {
+        return catalogue.editProductCategory(oldCategory.getName(), newCategory.getName());
     }
 
     public boolean deleteProductCategory(ProductCategory category, Catalogue catalogue) {
-        return catalogue.deleteProductCategory(category);
+        return catalogue.deleteProductCategory(category.getName());
     }
 }

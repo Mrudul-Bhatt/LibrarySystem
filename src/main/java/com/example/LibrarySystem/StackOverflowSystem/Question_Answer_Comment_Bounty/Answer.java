@@ -42,8 +42,16 @@ public class Answer {
         comments.add(comment);
     }
 
+    public void removeComment(Comment comment) {
+        comments.remove(comment);
+    }
+
     public void addFollower(User follower) {
         followers.add(follower);
+    }
+
+    public void removeFollower(User follower) {
+        followers.remove(follower);
     }
 
     public void upVote() {
@@ -56,8 +64,8 @@ public class Answer {
         voteCount++;
     }
 
-    public void markAsAccepted() {
-        isAccepted = true;
+    public void incrementFlagCount() {
+        flagCount++;
     }
 
 }
