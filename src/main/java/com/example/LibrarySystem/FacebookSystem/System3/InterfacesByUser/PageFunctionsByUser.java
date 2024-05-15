@@ -1,4 +1,6 @@
-package com.example.LibrarySystem.FacebookSystem.InterfacesByUser;
+package com.example.LibrarySystem.FacebookSystem.System3.InterfacesByUser;
+
+import com.example.LibrarySystem.FacebookSystem.System3.Page_Post_Comment.Page;
 
 public interface PageFunctionsByUser {
     public Page createPage(String name);

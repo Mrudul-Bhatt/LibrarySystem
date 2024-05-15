@@ -1,4 +1,6 @@
-package com.example.LibrarySystem.FacebookSystem.InterfacesByUser;
+package com.example.LibrarySystem.FacebookSystem.System3.InterfacesByUser;
+
+import com.example.LibrarySystem.FacebookSystem.System3.Group_GroupFunctions.Group;
 
 public interface GroupFunctionsByUser {
     public Group createGroup(String name);
