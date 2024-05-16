@@ -20,20 +20,18 @@ public class Group implements GroupFunctions {
     private List<User> users;
 
     public boolean addUser(User user) {
-        // functionality
+        users.add(user);
+        totalUsers++;
+        return true;
     }
 
     public boolean deleteUser(User user) {
-        // functionality
+        users.remove(user);
+        totalUsers--;
+        return true;
     }
 
     public boolean notifyUser(User user) {
         // functionality
-    }
-
-    public void updateDescription(String description) {
-    }
-
-    public void addCoverPhoto(byte[] image) {
     }
 }

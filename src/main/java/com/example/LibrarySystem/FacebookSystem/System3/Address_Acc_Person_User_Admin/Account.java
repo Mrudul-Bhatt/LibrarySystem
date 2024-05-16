@@ -15,5 +15,4 @@ public class Account {
     private String email;
     private AccountStatus status;
 
-    public boolean resetPassword();
 }

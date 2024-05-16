@@ -1,12 +1,11 @@
 package com.example.LibrarySystem.FacebookSystem.System3.Profile_Privacy_Education_Places_Work;
 
-import java.util.List;
-
 import com.example.LibrarySystem.FacebookSystem.System3.Address_Acc_Person_User_Admin.User;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -17,6 +16,10 @@ public class Profile {
     private byte[] coverPhoto;
     private List<User> friends;
 
+    private boolean friendsListVisible;
+    private boolean profileLocked;
+    private boolean profilePictureLocked;
+    
     private List<Integer> usersFollowed;
     private List<Integer> pagesFollowed;
     private List<Integer> groupsJoined;
@@ -25,15 +28,16 @@ public class Profile {
     private List<Education> educationInfo;
     private List<Place> places;
 
-    public boolean addWorkExperience(Work work);
+    public boolean addWorkExperience(Work work) {
+        return workExperience.add(work);
+    }
 
-    public boolean addEducation(Education education);
+    public boolean addEducation(Education education) {
+        return educationInfo.add(education);
+    }
 
-    public boolean addPlace(Place place);
+    public boolean addPlace(Place place) {
+        return places.add(place);
+    }
 
-    public boolean addProfilePicture(byte[] image);
-
-    public boolean addCoverPhoto(byte[] image);
-
-    public boolean addGender(String gender);
 }

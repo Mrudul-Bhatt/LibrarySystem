@@ -1,17 +1,15 @@
 package com.example.LibrarySystem.FacebookSystem.System3.Address_Acc_Person_User_Admin;
 
-import java.util.Date;
-import java.util.List;
-
 import com.example.LibrarySystem.FacebookSystem.System3.Group_GroupFunctions.Group;
+import com.example.LibrarySystem.FacebookSystem.System3.InterfacesByUser.PageFunctionsByUser;
 import com.example.LibrarySystem.FacebookSystem.System3.Page_Post_Comment.Page;
-import lombok.AllArgsConstructor;
+import com.example.LibrarySystem.FacebookSystem.System3.Profile_Privacy_Education_Places_Work.Profile;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.logging.log4j.message.Message;
-import org.springframework.context.annotation.Profile;
 
-import com.example.LibrarySystem.FacebookSystem.System3.InterfacesByUser.PageFunctionsByUser;
+import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -19,6 +17,7 @@ public class User extends Person implements PageFunctionsByUser {
     private int userId;
     private String name;
     private Date dateOfJoining;
+
     // The following lists contain the pages and groups that a user is admin of
     private List<Page> pagesAdmin;
     private List<Group> groupsAdmin;

@@ -14,8 +14,14 @@ public class Message {
     private int messageId;
     private User sender;
     private String content;
-    private List<User> recipient;
+    private List<User> recipients;
     private List<byte[]> multimedia;
 
-    public boolean addRecipent(List<User> users);
+    public boolean addRecipient(User user) {
+        return recipients.add(user);
+    }
+
+    public boolean removeRecipient(User user) {
+        return recipients.remove(user);
+    }
 }
