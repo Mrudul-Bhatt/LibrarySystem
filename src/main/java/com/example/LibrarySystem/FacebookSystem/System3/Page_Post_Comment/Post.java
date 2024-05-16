@@ -1,5 +1,7 @@
 package com.example.LibrarySystem.FacebookSystem.System3.Page_Post_Comment;
 
+import java.util.List;
+
 import com.example.LibrarySystem.FacebookSystem.System3.Address_Acc_Person_User_Admin.User;
 import com.example.LibrarySystem.FacebookSystem.System3.Enums.PostPrivacySettings;
 import lombok.AllArgsConstructor;
@@ -17,8 +19,5 @@ public class Post {
     private int shareCount;
     private User postOwner;
     private PostPrivacySettings settings;
-
-    public void changePostVisibility(PostPrivacySettings setting) {
-        this.settings = setting;
-    }
+    private List<Comment> comments;
 }

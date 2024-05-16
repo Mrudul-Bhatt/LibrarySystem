@@ -1,19 +1,25 @@
 package com.example.LibrarySystem.FacebookSystem.System3.Address_Acc_Person_User_Admin;
 
 import com.example.LibrarySystem.FacebookSystem.System3.Group_GroupFunctions.Group;
+import com.example.LibrarySystem.FacebookSystem.System3.InterfacesByUser.CommentFunctionsByUser;
+import com.example.LibrarySystem.FacebookSystem.System3.InterfacesByUser.GroupFunctionsByUser;
 import com.example.LibrarySystem.FacebookSystem.System3.InterfacesByUser.PageFunctionsByUser;
+import com.example.LibrarySystem.FacebookSystem.System3.Message_FriendRequest_Notification.FriendRequest;
+import com.example.LibrarySystem.FacebookSystem.System3.Message_FriendRequest_Notification.Message;
+import com.example.LibrarySystem.FacebookSystem.System3.Page_Post_Comment.Comment;
 import com.example.LibrarySystem.FacebookSystem.System3.Page_Post_Comment.Page;
+import com.example.LibrarySystem.FacebookSystem.System3.Page_Post_Comment.Post;
 import com.example.LibrarySystem.FacebookSystem.System3.Profile_Privacy_Education_Places_Work.Profile;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.logging.log4j.message.Message;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Getter
 @Setter
-public class User extends Person implements PageFunctionsByUser {
+public class User extends Person implements PageFunctionsByUser, CommentFunctionsByUser, GroupFunctionsByUser {
     private int userId;
     private String name;
     private Date dateOfJoining;
@@ -24,40 +30,105 @@ public class User extends Person implements PageFunctionsByUser {
 
     private Profile profile;
 
-    public boolean sendMessage(Message message);
+    private List<User> friends;
+    private List<FriendRequest> receivedFriendRequests;
+    private List<FriendRequest> sentFriendRequests;
+    private List<Message> messages;
 
-    public boolean sendRecommendation(Page page, Group group, User user);
+    public User(String name, Address address, String email, String phone, Account account) {
+        super(name, address, email, phone, account);
+        this.pagesAdmin = new ArrayList<>();
+        this.groupsAdmin = new ArrayList<>();
+        this.friends = new ArrayList<>();
+        this.receivedFriendRequests = new ArrayList<>();
+        this.sentFriendRequests = new ArrayList<>();
+        this.messages = new ArrayList<>();
+    }
 
-    public boolean sendFriendRequest(User user);
+    @Override
+    public Group createGroup(String name) {
+        Group group = Group.builder().groupId("random").name(name).build();
+        group.addMember(this);
+        groupsAdmin.add(group);
+        return group;
+    }
 
-    public boolean unfriendUser(User user);
+    @Override
+    public void joinGroup(Group group) {
+        group.addMember(this);
+    }
 
-    public boolean blockUser(User user);
+    @Override
+    public void leaveGroup(Group group) {
+        group.deleteMember(this);
+    }
 
-    public boolean followUser(User user);
+    @Override
+    public void sendGroupInvite(Group group) {
+        // group.inviteUser(this);
+    }
 
-    // The functions of the different interfaces will also be present here
+    @Override
+    public Comment createComment(Post post, String content) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'createComment'");
+    }
+
+    @Override
+    public void likeComment(Comment comment) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'likeComment'");
+    }
+
+    @Override
     public Page createPage(String name) {
-        // functionality
+        Page page = Page.builder().pageId(1).name(name).build();
+        page.setOwner(this);
+        pagesAdmin.add(page);
+        return page;
     }
 
-    public void likePage(Page page) {
-        // functionality
-    }
-
-    public void followPage(Page page) {
-        // functionality
-    }
-
-    public void unLikePage(Page page) {
-        // functionality
-    }
-
-    public void unFollowPage(Page page) {
-        // functionality
-    }
-
+    @Override
     public Page sharePage(Page page) {
-        // functionality
+        return page;
     }
+
+    @Override
+    public void likePage(Page page) {
+        page.incrementLikes();
+    }
+
+    @Override
+    public void followPage(Page page) {
+        page.addFollower(this);
+    }
+
+    @Override
+    public void unLikePage(Page page) {
+        page.decrementLikes();
+    }
+
+    @Override
+    public void unFollowPage(Page page) {
+        page.removeFollower(this);
+    }
+
+    public boolean sendMessage(User recipient, String content) {
+        Message message = Message.builder().sender(this).content(content).recipients(List.of(recipient)).build();
+        return recipient.receiveMessage(message);
+    }
+
+    public boolean receiveMessage(Message message) {
+        return messages.add(message);
+    }
+
+    // public boolean sendRecommendation(Page page, Group group, User user);
+
+    // public boolean sendFriendRequest(User user);
+
+    // public boolean unfriendUser(User user);
+
+    // public boolean blockUser(User user);
+
+    // public boolean followUser(User user);
 }

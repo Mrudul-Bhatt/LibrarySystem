@@ -15,5 +15,8 @@ public class Notification {
     private Date createdOn;
     private String content;
 
-    public boolean sendNotification(Account account);
+    public boolean sendNotification(Account account) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'addUser'");
+    }
 }

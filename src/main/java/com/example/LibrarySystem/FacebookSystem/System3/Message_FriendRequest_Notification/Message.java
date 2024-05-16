@@ -2,6 +2,7 @@ package com.example.LibrarySystem.FacebookSystem.System3.Message_FriendRequest_N
 
 import com.example.LibrarySystem.FacebookSystem.System3.Address_Acc_Person_User_Admin.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
+@Builder
 public class Message {
     private int messageId;
     private User sender;
