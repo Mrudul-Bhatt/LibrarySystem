@@ -1,18 +1,62 @@
 package com.example.LibrarySystem.AirlineManagementSystem.System2.Person_Admin_Crew_DeskOfficer_Customer;
 
+import com.example.LibrarySystem.AirlineManagementSystem.System2.Address_Acc_Passenger.Account;
+import com.example.LibrarySystem.AirlineManagementSystem.System2.Address_Acc_Passenger.Address;
 import com.example.LibrarySystem.AirlineManagementSystem.System2.Airport_Aircraft_Airline.Aircraft;
+import com.example.LibrarySystem.AirlineManagementSystem.System2.Airport_Aircraft_Airline.Airline;
 import com.example.LibrarySystem.AirlineManagementSystem.System2.Flight_FlightInstance.Flight;
 
 public class Admin extends Person {
-    public boolean addAircraft(Aircraft aircraft);
+    public Admin(String name, Address address, String email, String phone, Account account) {
+        super(name, address, email, phone, account);
+    }
 
-    public boolean addFlight(Flight flight);
+    // Add an aircraft
+    public boolean addAircraft(Aircraft aircraft) {
+        Airline airline = Airline.getInstance();
+        return airline.addAircraft(aircraft);
+    }
 
-    public boolean cancelFlight(Flight flight);
+    // Remove an aircraft
+    public boolean removeAircraft(Aircraft aircraft) {
+        Airline airline = Airline.getInstance();
+        return airline.removeAircraft(aircraft);
+    }
 
-    public boolean assignCrew(Flight flight);
+    // Add a flight
+    public boolean addFlight(Flight flight) {
+        Airline airline = Airline.getInstance();
+        return airline.addFlight(flight);
+    }
 
-    public boolean blockUser(User user);
+    // Remove a flight
+    public boolean removeFlight(Flight flight) {
+        Airline airline = Airline.getInstance();
+        return airline.removeFlight(flight);
+    }
 
-    public boolean unblockUser(User user);
+    // Cancel a flight
+    public boolean cancelFlight(Flight flight) {
+        flight.setStatus(FlightStatus.CANCELLED);
+        return true;
+    }
+
+    // Assign crew to a flight
+    public boolean assignCrew(Flight flight, Crew crewMember) {
+        Airline airline = Airline.getInstance();
+        return airline.assignCrew(flight, crewMember);
+    }
+
+    // Block a user
+    public boolean blockUser(User user) {
+        user.getAccount().setStatus(AccountStatus.BLOCKED);
+        return true;
+    }
+
+    // Unblock a user
+    public boolean unblockUser(User user) {
+        user.getAccount().setStatus(AccountStatus.ACTIVE);
+        return true;
+    }
+
 }
