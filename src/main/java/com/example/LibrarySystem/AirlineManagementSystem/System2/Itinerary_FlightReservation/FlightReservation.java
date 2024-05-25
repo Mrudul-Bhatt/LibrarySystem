@@ -44,6 +44,21 @@ public class FlightReservation {
         return false;
     }
 
+    public boolean assignSeat(Passenger passenger, String seatNumber) {
+        if (!seatMap.containsKey(passenger)) {
+            return false;
+        }
+        if (flight.isSeatAvailable(seatNumber)) {
+            FlightSeat seat = flight.getSeatByNumber(seatNumber);
+            if (seat != null) {
+                seatMap.put(passenger, seat);
+                seat.book();
+                return true;
+            }
+        }
+        return false;
+    }
+
     // Remove a passenger from the reservation
     public boolean removePassenger(Passenger passenger) {
         FlightSeat seat = seatMap.remove(passenger);

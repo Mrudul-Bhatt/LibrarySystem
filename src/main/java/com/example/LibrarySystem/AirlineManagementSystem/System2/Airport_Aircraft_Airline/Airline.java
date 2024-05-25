@@ -27,9 +27,9 @@ public class Airline {
     }
 
     // Singleton instance access method
-    public static Airline getInstance(String name, String code) {
+    public static Airline getInstance() {
         if (airline == null) {
-            airline = new Airline(name, code);
+            airline = new Airline("Name Temp", "Code Temp");
         }
         return airline;
     }
@@ -57,7 +57,7 @@ public class Airline {
     // Assign crew to a flight
     public boolean assignCrew(Flight flight, Crew crewMember) {
         if (flights.contains(flight)) {
-            flight.addCrewMember(crewMember);
+            flight.assignCrewMember(crewMember);
             return true;
         }
         return false;

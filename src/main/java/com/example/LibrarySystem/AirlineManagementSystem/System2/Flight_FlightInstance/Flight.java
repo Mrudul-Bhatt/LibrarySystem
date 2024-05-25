@@ -1,6 +1,8 @@
 package com.example.LibrarySystem.AirlineManagementSystem.System2.Flight_FlightInstance;
 
 import com.example.LibrarySystem.AirlineManagementSystem.System2.Airport_Aircraft_Airline.Airport;
+import com.example.LibrarySystem.AirlineManagementSystem.System2.Person_Admin_Crew_DeskOfficer_Customer.Crew;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,6 +19,7 @@ public class Flight {
     private Airport departure;
     private Airport arrival;
     private List<FlightInstance> instances;
+    private List<Crew> assignedCrew;
 
     public Flight(String flightNo, int durationMin, Airport departure, Airport arrival) {
         this.flightNo = flightNo;
@@ -71,5 +74,18 @@ public class Flight {
         for (FlightInstance instance : instances) {
             instance.cancel();
         }
+    }
+
+    // Assign a crew member to the flight
+    public boolean assignCrewMember(Crew crew) {
+        if (!assignedCrew.contains(crew)) {
+            return assignedCrew.add(crew);
+        }
+        return false;
+    }
+
+    // Remove a crew member from the flight
+    public boolean removeCrewMember(Crew crew) {
+        return assignedCrew.remove(crew);
     }
 }

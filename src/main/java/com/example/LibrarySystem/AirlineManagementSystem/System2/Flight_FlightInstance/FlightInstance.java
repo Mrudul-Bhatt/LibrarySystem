@@ -3,6 +3,7 @@ package com.example.LibrarySystem.AirlineManagementSystem.System2.Flight_FlightI
 import com.example.LibrarySystem.AirlineManagementSystem.System2.Airport_Aircraft_Airline.Aircraft;
 import com.example.LibrarySystem.AirlineManagementSystem.System2.Enums.FlightStatus;
 import com.example.LibrarySystem.AirlineManagementSystem.System2.Enums.SeatType;
+import com.example.LibrarySystem.AirlineManagementSystem.System2.Person_Admin_Crew_DeskOfficer_Customer.Crew;
 import com.example.LibrarySystem.AirlineManagementSystem.System2.Seat_FlightSeat.FlightSeat;
 import com.example.LibrarySystem.AirlineManagementSystem.System2.Seat_FlightSeat.Seat;
 import lombok.Getter;
@@ -21,6 +22,7 @@ public class FlightInstance {
     private FlightStatus status;
     private Aircraft aircraft;
     private List<FlightSeat> seats;
+    private List<Crew> assignedCrew;
 
     public FlightInstance(Flight flight, Date departureTime, String gate, Aircraft aircraft) {
         this.flight = flight;
@@ -81,5 +83,18 @@ public class FlightInstance {
     // Update the flight status
     public void updateStatus(FlightStatus newStatus) {
         this.status = newStatus;
+    }
+
+    // Add a crew member to the flight instance
+    public boolean assignCrewMember(Crew crew) {
+        if (!assignedCrew.contains(crew)) {
+            return assignedCrew.add(crew);
+        }
+        return false;
+    }
+
+    // Remove a crew member from the flight instance
+    public boolean removeCrewMember(Crew crew) {
+        return assignedCrew.remove(crew);
     }
 }

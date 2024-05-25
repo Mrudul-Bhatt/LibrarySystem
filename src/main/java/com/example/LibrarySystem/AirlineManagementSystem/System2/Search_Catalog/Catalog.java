@@ -25,9 +25,9 @@ public class Catalog implements Search {
         Flight flight = flightsByNumber.remove(flightNo);
         if (flight != null) {
             for (FlightInstance instance : flight.getInstances()) {
-                Quartet<Airport, Airport, Date, Date> key =
-                        createKey(instance.getFlight().getDeparture(), instance.getFlight().getArrival(),
-                                instance.getDepartureTime(), instance.getDepartureTime());
+                Quartet<Airport, Airport, Date, Date> key = createKey(instance.getFlight().getDeparture(),
+                        instance.getFlight().getArrival(),
+                        instance.getDepartureTime(), instance.getDepartureTime());
                 flights.get(key).remove(instance);
             }
         }
@@ -54,17 +54,17 @@ public class Catalog implements Search {
 
     // Add a flight instance to the catalog
     public void addFlightInstance(FlightInstance instance) {
-        Quartet<Airport, Airport, Date, Date> key =
-                createKey(instance.getFlight().getDeparture(), instance.getFlight().getArrival(),
-                        instance.getDepartureTime(), instance.getDepartureTime());
+        Quartet<Airport, Airport, Date, Date> key = createKey(instance.getFlight().getDeparture(),
+                instance.getFlight().getArrival(),
+                instance.getDepartureTime(), instance.getDepartureTime());
         flights.computeIfAbsent(key, k -> new ArrayList<>()).add(instance);
     }
 
     // Remove a flight instance from the catalog
     public void removeFlightInstance(FlightInstance instance) {
-        Quartet<Airport, Airport, Date, Date> key =
-                createKey(instance.getFlight().getDeparture(), instance.getFlight().getArrival(),
-                        instance.getDepartureTime(), instance.getDepartureTime());
+        Quartet<Airport, Airport, Date, Date> key = createKey(instance.getFlight().getDeparture(),
+                instance.getFlight().getArrival(),
+                instance.getDepartureTime(), instance.getDepartureTime());
         List<FlightInstance> instances = flights.get(key);
         if (instances != null) {
             instances.remove(instance);
@@ -76,7 +76,7 @@ public class Catalog implements Search {
 
     // Helper method to create a key for the flight instances map
     private Quartet<Airport, Airport, Date, Date> createKey(Airport source, Airport destination, Date arrival,
-                                                            Date departure) {
+            Date departure) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(arrival);
         cal.set(Calendar.HOUR_OF_DAY, 0);

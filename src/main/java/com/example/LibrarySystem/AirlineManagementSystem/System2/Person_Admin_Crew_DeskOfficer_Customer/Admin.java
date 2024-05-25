@@ -4,7 +4,10 @@ import com.example.LibrarySystem.AirlineManagementSystem.System2.Address_Acc_Pas
 import com.example.LibrarySystem.AirlineManagementSystem.System2.Address_Acc_Passenger.Address;
 import com.example.LibrarySystem.AirlineManagementSystem.System2.Airport_Aircraft_Airline.Aircraft;
 import com.example.LibrarySystem.AirlineManagementSystem.System2.Airport_Aircraft_Airline.Airline;
+import com.example.LibrarySystem.AirlineManagementSystem.System2.Enums.AccountStatus;
+import com.example.LibrarySystem.AirlineManagementSystem.System2.Enums.FlightStatus;
 import com.example.LibrarySystem.AirlineManagementSystem.System2.Flight_FlightInstance.Flight;
+import com.example.LibrarySystem.AirlineManagementSystem.System2.Flight_FlightInstance.FlightInstance;
 
 public class Admin extends Person {
     public Admin(String name, Address address, String email, String phone, Account account) {
@@ -36,8 +39,8 @@ public class Admin extends Person {
     }
 
     // Cancel a flight
-    public boolean cancelFlight(Flight flight) {
-        flight.setStatus(FlightStatus.CANCELLED);
+    public boolean cancelFlight(FlightInstance flight) {
+        flight.setStatus(FlightStatus.CANCELED);
         return true;
     }
 
@@ -48,13 +51,13 @@ public class Admin extends Person {
     }
 
     // Block a user
-    public boolean blockUser(User user) {
+    public boolean blockUser(Person user) {
         user.getAccount().setStatus(AccountStatus.BLOCKED);
         return true;
     }
 
     // Unblock a user
-    public boolean unblockUser(User user) {
+    public boolean unblockUser(Person user) {
         user.getAccount().setStatus(AccountStatus.ACTIVE);
         return true;
     }

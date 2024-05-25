@@ -22,8 +22,10 @@ public class Seat {
 
     // Check if two seats are the same
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Seat seat = (Seat) o;
         return seatNumber.equals(seat.seatNumber) && type == seat.type;
     }
