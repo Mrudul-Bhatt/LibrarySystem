@@ -52,7 +52,7 @@ public class FlightReservation {
             FlightSeat seat = flight.getSeatByNumber(seatNumber);
             if (seat != null) {
                 seatMap.put(passenger, seat);
-                seat.book();
+                seat.bookSeat(reservationNumber);
                 return true;
             }
         }

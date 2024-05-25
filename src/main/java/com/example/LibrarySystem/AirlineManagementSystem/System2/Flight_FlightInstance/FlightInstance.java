@@ -1,6 +1,8 @@
 package com.example.LibrarySystem.AirlineManagementSystem.System2.Flight_FlightInstance;
 
 import com.example.LibrarySystem.AirlineManagementSystem.System2.Airport_Aircraft_Airline.Aircraft;
+import com.example.LibrarySystem.AirlineManagementSystem.System2.DesignPatterns.Observer.Observer;
+import com.example.LibrarySystem.AirlineManagementSystem.System2.DesignPatterns.Observer.Subject;
 import com.example.LibrarySystem.AirlineManagementSystem.System2.Enums.FlightStatus;
 import com.example.LibrarySystem.AirlineManagementSystem.System2.Enums.SeatType;
 import com.example.LibrarySystem.AirlineManagementSystem.System2.Person_Admin_Crew_DeskOfficer_Customer.Crew;
@@ -15,7 +17,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class FlightInstance {
+public class FlightInstance implements Subject {
     private Flight flight;
     private Date departureTime;
     private String gate;
@@ -23,6 +25,7 @@ public class FlightInstance {
     private Aircraft aircraft;
     private List<FlightSeat> seats;
     private List<Crew> assignedCrew;
+    private List<Observer> observers;  // List of observers
 
     public FlightInstance(Flight flight, Date departureTime, String gate, Aircraft aircraft) {
         this.flight = flight;
@@ -31,7 +34,26 @@ public class FlightInstance {
         this.status = FlightStatus.SCHEDULED;
         this.aircraft = aircraft;
         this.seats = new ArrayList<>();
+        this.observers = new ArrayList<>();  // Initialize the observers list
         initializeSeats(aircraft);
+    }
+
+    // Subject interface methods
+    @Override
+    public void registerObserver(Observer observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers(String message) {
+        for (Observer observer : observers) {
+            observer.update(message);
+        }
     }
 
     // Initialize seats based on the aircraft
@@ -60,6 +82,26 @@ public class FlightInstance {
             }
         }
         return availableSeats;
+    }
+
+    // Check if a specific seat is available
+    public boolean isSeatAvailable(String seatNumber) {
+        for (FlightSeat seat : seats) {
+            if (seat.getSeat().getSeatNumber().equals(seatNumber)) {
+                return seat.isAvailable();
+            }
+        }
+        return false;
+    }
+
+    // Get a specific seat by its number
+    public FlightSeat getSeatByNumber(String seatNumber) {
+        for (FlightSeat seat : seats) {
+            if (seat.getSeat().getSeatNumber().equals(seatNumber)) {
+                return seat;
+            }
+        }
+        return null;
     }
 
     // Book a specific seat
