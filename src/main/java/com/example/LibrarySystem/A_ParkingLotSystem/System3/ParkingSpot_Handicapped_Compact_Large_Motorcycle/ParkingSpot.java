@@ -11,11 +11,29 @@ public abstract class ParkingSpot {
     private boolean isFree;
     private Vehicle vehicle;
 
-    public boolean getIsFree();
+    public ParkingSpot(int id) {
+        this.id = id;
+        this.isFree = true;
+    }
 
-    public abstract boolean assignVehicle(Vehicle vehicle);
+    public boolean isFree() {
+        return isFree;
+    }
+
+    public abstract boolean canFitVehicle(Vehicle vehicle);
+
+    public boolean assignVehicle(Vehicle vehicle) {
+        if (canFitVehicle(vehicle)) {
+            this.vehicle = vehicle;
+            this.isFree = false;
+            return true;
+        }
+        return false;
+    }
 
     public boolean removeVehicle() {
-        // definition
+        this.vehicle = null;
+        this.isFree = true;
+        return true;
     }
 }

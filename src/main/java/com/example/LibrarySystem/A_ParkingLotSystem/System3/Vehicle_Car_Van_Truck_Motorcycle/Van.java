@@ -4,7 +4,12 @@ import com.example.LibrarySystem.A_ParkingLotSystem.System3.ParkingTicket_Entran
 
 public class Van extends Vehicle {
 
-    @Override public void assignTicket(ParkingTicket ticket) {
+    public Van(String licensePlate) {
+        super(licensePlate);
+    }
 
+    @Override
+    public void assignTicket(ParkingTicket ticket) {
+        setTicket(ticket);
     }
 }
