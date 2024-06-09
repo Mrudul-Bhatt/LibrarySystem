@@ -3,7 +3,15 @@ package com.example.LibrarySystem.B_ElevatorSystem.System3.Button_Door_Hall_Elev
 public abstract class Button {
     private boolean status;
 
-    public pressDown();
+    public void pressDown() {
+        status = true;
+    }
 
-    public abstract boolean isPressed();
+    public void release() {
+        status = false;
+    }
+
+    public boolean isPressed() {
+        return status;
+    }
 }

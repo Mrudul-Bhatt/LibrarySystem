@@ -1,27 +1,45 @@
 package com.example.LibrarySystem.B_ElevatorSystem.System3.ElevatorSystem_Building;
 
+import com.example.LibrarySystem.B_ElevatorSystem.System3.Door_Floor_ElevatorCar.ElevatorCar;
+import com.example.LibrarySystem.B_ElevatorSystem.System3.Enums.Direction;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class ElevatorSystem {
+    private static ElevatorSystem system = null;
     private Building building;
 
-    public void monitoring();
-
-    public void dispatcher();
-
-    // Private constructor to prevent direct instantiation
-    private ElevatorSystem() {
-        // Initialize the ElevatorSystem
+    private ElevatorSystem(Building building) {
+        this.building = building;
     }
 
-    // The ElevarSystem is a singleton class that ensures it will have only one
-    // active instance at a time
-    private static ElevatorSystem system = null;
-
-    // Created a static method to access the singleton instance of ElevatorSytem
-    // class
-    public static ElevatorSystem getInstance() {
+    public static ElevatorSystem getInstance(Building building) {
         if (system == null) {
-            system = new ElevatorSystem();
+            system = new ElevatorSystem(building);
         }
         return system;
+    }
+
+    public void monitoring() {
+        // Logic to monitor the state of all elevators and floors
+        System.out.println("Monitoring the elevator system...");
+        for (ElevatorCar elevator : building.getElevators()) {
+            System.out.println(
+                    "Elevator " + elevator.getId() + " is at floor " + elevator.getCurrentFloor() + " in state " +
+                            elevator.getState());
+        }
+    }
+
+    public void dispatcher() {
+        // Logic to dispatch elevators based on requests
+        System.out.println("Dispatching elevators...");
+        // For simplicity, we could implement a basic dispatcher that checks for requests and assigns elevators
+    }
+
+    public void requestElevator(int floorNumber, Direction direction) {
+        System.out.println("Processing request for elevator at floor " + floorNumber + " going " + direction);
+        building.requestElevator(floorNumber, direction);
     }
 }
